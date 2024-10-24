@@ -5,7 +5,7 @@ const { rejects } = require('node:assert');
 const mergePath = path.join(__dirname, 'project-dist', 'bundle.css');
 const stylesPath = path.join(__dirname, 'styles');
 
-const writeFile = async (path, data) => {
+const writeFileAsync = async (path, data) => {
   return new Promise((resolve, reject) => {
     fs.writeFile(path, data, (err) => {
       if (err) {
@@ -38,9 +38,8 @@ const readFileAsync = async (path) => {
   );
 };
 
-writeFile(mergePath, 'bundle.css')
+writeFileAsync(mergePath, 'bundle.css')
   .then(() => {
-    console.log('Файл успешно создан');
     return checkDirectoryAsync(stylesPath);
   })
   .then((files) => {
@@ -52,12 +51,13 @@ writeFile(mergePath, 'bundle.css')
       const filePath = path.join(stylesPath, file);
       return readFileAsync(filePath);
     });
-    console.log('все промисы прочитаны и собраны');
     return Promise.all(readPromises);
   })
   .then((text) => {
     const mergeAllText = text.join('\n');
-    return writeFile(mergePath, mergeAllText);
+    return writeFileAsync(mergePath, mergeAllText);
   })
 
   .catch((err) => console.log(err));
+
+module.exports = checkDirectoryAsync;
